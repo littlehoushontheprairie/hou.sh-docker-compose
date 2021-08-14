@@ -1,0 +1,80 @@
+version: '3.5'
+services:
+  cloudflared:
+    image: crazymax/cloudflared:latest
+    container_name: cloudflared
+    ports:
+      - '5053:5053/udp'
+      - '49312:49312/tcp'
+    environment:
+      - 'TZ=America/Los_Angeles'
+      - 'TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query'
+      - 'TUNNEL_DNS_ADDRESS=172.22.0.2'
+    cap_add:
+      - NET_BIND_SERVICE
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.22.0.2
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - '53:53/tcp'
+      - '53:53/udp'
+      - '67:67/udp'
+      - '8080:80/tcp'
+      - '8443:443/tcp'
+    environment:
+      TZ: 'America/Los_Angeles'
+      WEBPASSWORD: '${PIHOLE_PASSWORD}'
+      DNS1: '172.22.0.2#5053'
+      DNS2: ''
+      ServerIP: '0.0.0.0'
+      # ServerIPv6: ''
+      # IPv6: 'true'
+    # Volumes store your data between container upgrades
+    volumes:
+      - './pihole/etc-pihole/:/etc/pihole/'
+      - './pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    cap_add:
+      #- NET_ADMIN
+      - NET_BIND_SERVICE
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.22.0.3
+
+  wireguard:
+    container_name: wireguard
+    image: ghcr.io/linuxserver/wireguard:latest
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: 'America/Los_Angeles'
+      SERVERURL: 73.221.210.8 #External IP
+      SERVERPORT: 51820
+      PEERS: 1
+      PEERDNS: 172.22.0.3 #DNS IP locally (Docker assigned)
+    volumes:
+      - ./wireguard/config:/config
+      - ./wireguard/lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.22.0.4
+
+networks:
+  network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16

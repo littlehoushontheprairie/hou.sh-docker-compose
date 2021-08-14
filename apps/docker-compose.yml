@@ -1,0 +1,41 @@
+version: '3.5'
+services:
+  freshrss:
+    image: ghcr.io/linuxserver/freshrss:latest
+    container_name: freshrss
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Los_Angeles
+    volumes:
+      - ./freshrss/config:/config
+    ports:
+      - '8888:80'
+    restart: always
+    networks:
+      base_network:
+        ipv4_address: 172.22.0.5
+
+  nginx_proxy_manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      DB_MYSQL_HOST: '172.22.0.7'
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: '${MYSQL_NGINX_USERNAME}'
+      DB_MYSQL_PASSWORD: '${MYSQL_NGINX_PASSWORD}'
+      DB_MYSQL_NAME: 'nginx_proxy_manager'
+    volumes:
+      - ./nginx_proxy_manager/data:/data
+      - ./nginx_proxy_manager/letsencrypt:/etc/letsencrypt
+    networks:
+      base_network:
+        ipv4_address: 172.22.0.6
+
+networks:
+  base_network:
+    external: true
