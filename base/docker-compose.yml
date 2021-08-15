@@ -7,9 +7,9 @@ services:
       - '5053:5053/udp'
       - '49312:49312/tcp'
     environment:
-      - 'TZ=America/Los_Angeles'
-      - 'TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query'
-      - 'TUNNEL_DNS_ADDRESS=172.22.0.2'
+      TZ: 'America/Los_Angeles'
+      TUNNEL_DNS_UPSTREAM: 'https://1.1.1.1/dns-query,https://1.0.0.1/dns-query'
+      TUNNEL_DNS_ADDRESS: '172.22.0.2'
     cap_add:
       - NET_BIND_SERVICE
     restart: always
@@ -31,7 +31,7 @@ services:
       WEBPASSWORD: '${PIHOLE_PASSWORD}'
       DNS1: '172.22.0.2#5053'
       DNS2: ''
-      ServerIP: '0.0.0.0'
+      ServerIP: '${SERVER_PUBLIC_IP}'
       # ServerIPv6: ''
       # IPv6: 'true'
     # Volumes store your data between container upgrades
@@ -39,7 +39,6 @@ services:
       - './pihole/etc-pihole/:/etc/pihole/'
       - './pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
     cap_add:
-      #- NET_ADMIN
       - NET_BIND_SERVICE
     restart: always
     networks:
@@ -56,7 +55,7 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: 'America/Los_Angeles'
-      SERVERURL: 73.221.210.8 #External IP
+      SERVERURL: ${SERVER_PUBLIC_IP} #External IP
       SERVERPORT: 51820
       PEERS: 1
       PEERDNS: 172.22.0.3 #DNS IP locally (Docker assigned)
