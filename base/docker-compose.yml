@@ -4,8 +4,8 @@ services:
     container_name: adguardhome
     image: adguard/adguardhome:latest
     ports:
-      - 8053:53/tcp 
-      - 8053:53/udp
+      - 53:53/tcp 
+      - 53:53/udp
       - 8067:67/udp
       - 8068:68/udp
       - 8080:80/tcp 
