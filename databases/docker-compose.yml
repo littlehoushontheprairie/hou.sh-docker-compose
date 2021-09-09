@@ -17,15 +17,6 @@ services:
       base_network:
         ipv4_address: 172.22.0.7
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8999:8080
-    networks:
-      base_network:
-        ipv4_address: 172.22.0.31
-
 networks:
   base_network:
     external: true
