@@ -1,13 +1,11 @@
 version: '3.5'
 services:
-  version: '3.5'
-services:
   cloudflared:
     image: visibilityspots/cloudflared
     container_name: cloudflared
     ports:
-      - "5054:5054/tcp"
-      - "5054:5054/udp"
+      - 5054:5054/tcp
+      - 5054:5054/udp
     environment:
         TZ: America/Los_Angeles
         PORT: 5054
@@ -30,7 +28,7 @@ services:
     environment:
       TZ: America/Los_Angeles
       WEBPASSWORD: ${PIHOLE_PASSWORD}
-      DNS1: 172.22.0.2#5053
+      DNS1: 172.22.0.2#5054
       DNS2: ''
       ServerIP: ${SERVER_PUBLIC_IP}
       # ServerIPv6: ''
