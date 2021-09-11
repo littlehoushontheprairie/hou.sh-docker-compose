@@ -15,7 +15,7 @@ services:
       - ./mysql/var/lib/mysql:/var/lib/mysql
     networks:
       base_network:
-        ipv4_address: 172.22.0.4
+        ipv4_address: 172.22.0.30
 
 networks:
   base_network:
