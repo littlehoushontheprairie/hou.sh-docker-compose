@@ -3,15 +3,14 @@ services:
   version: '3.5'
 services:
   cloudflared:
-    image: crazymax/cloudflared:latest
+    image: visibilityspots/cloudflared
     container_name: cloudflared
     ports:
-      - 5053:5053/udp
-      - 49312:49312/tcp
+      - "5054:5054/tcp"
+      - "5054:5054/udp"
     environment:
-      TZ: America/Los_Angeles
-      TUNNEL_DNS_UPSTREAM: https://1.1.1.1/dns-query,https://1.0.0.1/dns-query
-      TUNNEL_DNS_ADDRESS: 172.22.0.2
+        TZ: America/Los_Angeles
+        PORT: 5054
     cap_add:
       - NET_BIND_SERVICE
     restart: always
