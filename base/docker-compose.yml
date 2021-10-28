@@ -23,7 +23,6 @@ services:
     volumes:
       - ./adguardhome/work:/opt/adguardhome/work
       - ./adguardhome/conf:/opt/adguardhome/conf
-      - ../letsencrypt/live/npm-4:/opt/adguardhome/certs
     cap_add:
       - NET_BIND_SERVICE
     restart: always
