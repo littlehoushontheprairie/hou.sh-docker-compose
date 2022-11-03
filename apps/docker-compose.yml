@@ -8,7 +8,7 @@ services:
       PGID: 1000
       TZ: America/Los_Angeles
     volumes:
-      - ./freshrss/config:/config
+      - /mnt/orchid_storage/freshrss/config:/config
     ports:
       - '8888:80'
     restart: always
@@ -30,8 +30,8 @@ services:
       DB_MYSQL_PASSWORD: '${MYSQL_NGINX_PASSWORD}'
       DB_MYSQL_NAME: 'nginx_proxy_manager'
     volumes:
-      - ./nginx_proxy_manager/data:/data
-      - ./nginx_proxy_manager/letsencrypt:/etc/letsencrypt
+      - /mnt/orchid_storage/nginx_proxy_manager/data:/data
+      - /mnt/orchid_storage/nginx_proxy_manager/letsencrypt:/etc/letsencrypt
     networks:
       base_network:
         ipv4_address: 172.22.0.51
