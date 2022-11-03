@@ -12,7 +12,7 @@ services:
       MYSQL_ROOT_HOST: '%'
     restart: always
     volumes:
-      - ./mysql/var/lib/mysql:/var/lib/mysql
+      - /mnt/orchid_storage/mysql/var/lib/mysql:/var/lib/mysql
     networks:
       base_network:
         ipv4_address: 172.22.0.30
