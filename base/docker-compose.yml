@@ -41,9 +41,9 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
-      SERVERURL: ${SERVER_PUBLIC_IP} #External IP
+      SERVERURL: ${WIREGUARD_SERVER_URL}
       SERVERPORT: 51820
-      PEERS: 1
+      PEERS: ${WIREGUARD_PEERS}
       PEERDNS: 172.22.0.2 #DNS IP locally (Docker assigned)
     volumes:
       - /mnt/orchid_storage/wireguard/config:/config
