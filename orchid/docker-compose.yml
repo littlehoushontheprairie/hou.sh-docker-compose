@@ -119,7 +119,7 @@ services:
     image: hkotel/mealie:latest
     restart: always
     ports:
-      - 9925:9925
+      - 9925:80
     environment:
       PUID: 1000
       PGID: 1000
@@ -138,10 +138,10 @@ services:
       # WORKERS_PER_CORE: 0.5
       # MAX_WORKERS: 8
     volumes:
-      - ./mealie/data/:/app/data
+      - /mnt/orchid_storage/mealie/data/:/app/data
     networks:
-      base_network:
-        ipv4_address: 172.22.0.51
+      network:
+        ipv4_address: 172.22.0.52
 
 networks:
   network:
