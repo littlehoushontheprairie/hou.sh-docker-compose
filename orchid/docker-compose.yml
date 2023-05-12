@@ -1,0 +1,151 @@
+version: '3.5'
+services:
+  adguardhome:
+    container_name: adguardhome
+    image: adguard/adguardhome:latest
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 8067:67/udp
+      - 8068:68/udp
+      - 8080:80/tcp
+      - 8443:443/tcp
+      - 8443:443/udp
+      - 3000:3000/tcp
+      - 853:853/tcp
+      - 784:784/udp
+      - 853:853/udp
+      - 8853:8853/udp
+      - 5443:5443/tcp
+      - 5443:5443/udp
+    environment:
+      TZ: America/Los_Angeles
+    volumes:
+      - /mnt/orchid_storage/adguardhome/work:/opt/adguardhome/work
+      - /mnt/orchid_storage/adguardhome/conf:/opt/adguardhome/conf
+    cap_add:
+      - NET_BIND_SERVICE
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.22.0.2
+
+  wireguard:
+    container_name: wireguard
+    image: ghcr.io/linuxserver/wireguard:latest
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Los_Angeles
+      SERVERURL: ${WIREGUARD_SERVER_URL}
+      SERVERPORT: 51820
+      PEERS: ${WIREGUARD_PEERS}
+      PEERDNS: 172.22.0.2 #DNS IP locally (Docker assigned)
+    volumes:
+      - /mnt/orchid_storage/wireguard/config:/config
+      - /mnt/orchid_storage/wireguard/lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.22.0.3
+
+  mysql:
+    container_name: mysql
+    image: mysql/mysql-server:latest
+    command: --default-authentication-plugin=mysql_native_password --bind-address=172.22.0.30
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_ROOT_HOST: '%'
+    restart: always
+    volumes:
+      - /mnt/orchid_storage/mysql/var/lib/mysql:/var/lib/mysql
+    networks:
+      network:
+        ipv4_address: 172.22.0.30
+
+  freshrss:
+    image: ghcr.io/linuxserver/freshrss:latest
+    container_name: freshrss
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Los_Angeles
+    volumes:
+      - /mnt/orchid_storage/freshrss/config:/config
+    ports:
+      - '8888:80'
+    depends_on:
+      - mysql
+    restart: always
+    networks:
+      network:
+        ipv4_address: 172.22.0.50
+
+  nginx_proxy_manager:
+    container_name: nginx_proxy_manager
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      DB_MYSQL_HOST: '172.22.0.30'
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: '${MYSQL_NGINX_USERNAME}'
+      DB_MYSQL_PASSWORD: '${MYSQL_NGINX_PASSWORD}'
+      DB_MYSQL_NAME: 'nginx_proxy_manager'
+    volumes:
+      - /mnt/orchid_storage/nginx_proxy_manager/data:/data
+      - /mnt/orchid_storage/nginx_proxy_manager/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - mysql
+    networks:
+      network:
+        ipv4_address: 172.22.0.51
+  
+  mealie:
+    container_name: mealie
+    image: hkotel/mealie:latest
+    restart: always
+    ports:
+      - 9925:9925
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Los_Angeles
+
+      # Default Recipe Settings
+      RECIPE_PUBLIC: 'false'
+      RECIPE_SHOW_NUTRITION: 'true'
+      RECIPE_SHOW_ASSETS: 'true'
+      RECIPE_LANDSCAPE_VIEW: 'true'
+      RECIPE_DISABLE_COMMENTS: 'true'
+      RECIPE_DISABLE_AMOUNT: 'false'
+
+      # Gunicorn
+      # WEB_CONCURRENCY: 2
+      # WORKERS_PER_CORE: 0.5
+      # MAX_WORKERS: 8
+    volumes:
+      - ./mealie/data/:/app/data
+    networks:
+      base_network:
+        ipv4_address: 172.22.0.51
+
+networks:
+  network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
