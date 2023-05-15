@@ -1,5 +1,21 @@
 version: '3.5'
 services:
+  fail2ban:
+    image: lscr.io/linuxserver/fail2ban:latest
+    container_name: fail2ban
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: host
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Los_Angeles
+    volumes:
+      - /var/log:/var/log:ro
+      - /mnt/orchid_storage/nginx_proxy_manager/data/logs:/remotelogs/nginx:ro
+    restart: unless-stopped
+
   adguardhome:
     container_name: adguardhome
     image: adguard/adguardhome:latest
@@ -124,19 +140,17 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
-
-      # Default Recipe Settings
-      RECIPE_PUBLIC: 'false'
+      RECIPE_PUBLIC: 'true'
       RECIPE_SHOW_NUTRITION: 'true'
       RECIPE_SHOW_ASSETS: 'true'
       RECIPE_LANDSCAPE_VIEW: 'true'
       RECIPE_DISABLE_COMMENTS: 'true'
       RECIPE_DISABLE_AMOUNT: 'false'
-
-      # Gunicorn
-      # WEB_CONCURRENCY: 2
-      # WORKERS_PER_CORE: 0.5
-      # MAX_WORKERS: 8
+      SMTP_HOST: '${MEALIE_SMTP_SERVER}'
+      SMTP_FROM_NAME: '${MEALIE_SMTP_FROM_NAME}'
+      SMTP_FROM_EMAIL: '${MEALIE_SMTP_FROM_EMAIL}'
+      SMTP_USER: '${MEALIE_SMTP_USER}'
+      SMTP_PASSWORD: '${MEALIE_SMTP_PASSWORD}'
     volumes:
       - /mnt/orchid_storage/mealie/data/:/app/data
     networks:
