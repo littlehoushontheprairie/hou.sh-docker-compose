@@ -1,7 +1,24 @@
 version: '3.5'
 services:
+  homebridge:
+    container_name: homebridge
+    image: oznu/homebridge:latest
+    restart: always
+    network_mode: host
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: America/Los_Angeles
+    volumes:
+      - /mnt/orchid_storage/homebridge:/homebridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"
+
   adguardhome:
-    container_name: adguardhome
+    container_name: adguard
     image: adguard/adguardhome:latest
     ports:
       - 53:53/tcp
@@ -48,6 +65,7 @@ services:
         ipv4_address: 172.18.0.3
 
   nginx_proxy_manager:
+    container_name: nginx_proxy_manager
     image: 'jc21/nginx-proxy-manager:latest'
     restart: always
     ports:
@@ -63,6 +81,8 @@ services:
     volumes:
       - /mnt/lilac_storage/nginx_proxy_manager/data:/data
       - /mnt/lilac_storage/nginx_proxy_manager/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - mysql
     networks:
       network:
         ipv4_address: 172.18.0.4
