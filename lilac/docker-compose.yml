@@ -10,7 +10,7 @@ services:
       PGID: 1000
       TZ: America/Los_Angeles
     volumes:
-      - /mnt/orchid_storage/homebridge:/homebridge
+      - /mnt/lilac_storage/homebridge:/homebridge
     logging:
       driver: json-file
       options:
