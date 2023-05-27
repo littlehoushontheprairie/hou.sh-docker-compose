@@ -14,8 +14,8 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10mb"
-        max-file: "1"
+        max-size: '10mb'
+        max-file: '1'
 
   adguardhome:
     container_name: adguard
