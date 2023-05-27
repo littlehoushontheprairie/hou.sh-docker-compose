@@ -37,7 +37,7 @@ services:
       - 5443:5443/udp
     environment:
       TZ: America/Los_Angeles
-  volumes:
+    volumes:
       - /mnt/lilac_storage/adguardhome/work:/opt/adguardhome/work
       - /mnt/lilac_storage/adguardhome/conf:/opt/adguardhome/conf
     cap_add:
