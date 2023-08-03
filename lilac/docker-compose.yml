@@ -87,6 +87,42 @@ services:
       network:
         ipv4_address: 172.18.0.4
 
+  stash:
+    image: stashapp/stash:latest
+    container_name: stash
+    restart: unless-stopped
+    ports:
+      - "9999:9999"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "2m"
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      - STASH_PORT=9999
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      ## Keep configs, scrapers, and plugins here.
+      - /mnt/lilac_storage/stash/config:/root/.stash
+      ## Point this at your collection.
+      - /mnt/lilac_storage/stash/data:/data
+      ## This is where your stash's metadata lives
+      - /mnt/lilac_storage/stash/metadata:/metadata
+      ## Any other cache content.
+      - /mnt/lilac_storage/stash/cache:/cache
+      ## Where to store binary blob data (scene covers, images)
+      - /mnt/lilac_storage/stash/blobs:/blobs
+      ## Where to store generated content (screenshots,previews,transcodes,sprites)
+      - /mnt/lilac_storage/stash/generated:/generated
+    networks:
+      network:
+        ipv4_address: 172.18.0.5
+  
+
 networks:
   network:
     ipam:
