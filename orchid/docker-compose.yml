@@ -140,7 +140,7 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
-      RECIPE_PUBLIC: 'true'
+      RECIPE_PUBLIC: 'false'
       RECIPE_SHOW_NUTRITION: 'true'
       RECIPE_SHOW_ASSETS: 'true'
       RECIPE_LANDSCAPE_VIEW: 'true'
