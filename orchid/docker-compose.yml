@@ -129,28 +129,38 @@ services:
     networks:
       network:
         ipv4_address: 172.22.0.51
-  
+
   mealie:
     container_name: mealie
     image: hkotel/mealie:latest
     restart: always
     ports:
-      - 9925:80
+      - 9925:9000
     environment:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
-      RECIPE_PUBLIC: 'false'
-      RECIPE_SHOW_NUTRITION: 'true'
-      RECIPE_SHOW_ASSETS: 'true'
-      RECIPE_LANDSCAPE_VIEW: 'true'
-      RECIPE_DISABLE_COMMENTS: 'true'
-      RECIPE_DISABLE_AMOUNT: 'false'
+      BASE_URL: 'https://mealie.hou.sh'
+      ALLOW_SIGNUP: false
       SMTP_HOST: '${MEALIE_SMTP_SERVER}'
       SMTP_FROM_NAME: '${MEALIE_SMTP_FROM_NAME}'
       SMTP_FROM_EMAIL: '${MEALIE_SMTP_FROM_EMAIL}'
       SMTP_USER: '${MEALIE_SMTP_USER}'
       SMTP_PASSWORD: '${MEALIE_SMTP_PASSWORD}'
+      THEME_LIGHT_PRIMARY: "#78C2AD"
+      THEME_LIGHT_ACCENT: "#007A99"
+      THEME_LIGHT_SECONDARY: "#CF8083"
+      THEME_LIGHT_SUCCESS: "#56CC9D"
+      THEME_LIGHT_INFO: "#6cc3d5"
+      THEME_LIGHT_WARNING: "#ffce67"
+      THEME_LIGHT_ERROR: "#ff7851"
+      THEME_DARK_PRIMARY: "#78C2AD"
+      THEME_DARK_ACCENT: "#007A99"
+      THEME_DARK_SECONDARY: "#CF8083"
+      THEME_DARK_SUCCESS: "#56CC9D"
+      THEME_DARK_INFO: "#6cc3d5"
+      THEME_DARK_WARNING: "#ffce67"
+      THEME_DARK_ERROR: "#ff7851"
     volumes:
       - /mnt/orchid_storage/mealie/data/:/app/data
     networks:
