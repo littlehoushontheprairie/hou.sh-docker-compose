@@ -147,6 +147,8 @@ services:
       BASE_URL: 'https://mealie.hou.sh'
       ALLOW_SIGNUP: 'false'
       SMTP_HOST: '${MEALIE_SMTP_SERVER}'
+      SMTP_PORT: 465
+      SMTP_AUTH_STRATEGY: 'SSL'
       SMTP_FROM_NAME: '${MEALIE_SMTP_FROM_NAME}'
       SMTP_FROM_EMAIL: '${MEALIE_SMTP_FROM_EMAIL}'
       SMTP_USER: '${MEALIE_SMTP_USER}'
