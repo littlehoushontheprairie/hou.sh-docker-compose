@@ -172,26 +172,6 @@ services:
       network:
         ipv4_address: 172.22.0.52
 
-  goatcounter:
-    container_name: goatcounter
-    image: baethon/goatcounter:latest
-    restart: always
-    ports:
-      - 9080:8080
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: America/Los_Angeles
-      GOATCOUNTER_DOMAIN: '${GOATCOUNTER_DOMAIN}'
-      GOATCOUNTER_EMAIL: '${GOATCOUNTER_EMAIL}'
-      GOATCOUNTER_PASSWORD: '${GOATCOUNTER_PASSWORD}'
-      GOATCOUNTER_SMTP: '${GOATCOUNTER_SMTP}'
-    volumes:
-      - /mnt/orchid_storage/goatcounter:/db
-    networks:
-      network:
-        ipv4_address: 172.22.0.53
-
 networks:
   network:
     ipam:
