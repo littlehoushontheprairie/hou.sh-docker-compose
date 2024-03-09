@@ -1,17 +1,19 @@
 version: '3.5'
+
 services:
   fail2ban:
     image: lscr.io/linuxserver/fail2ban:latest
     container_name: fail2ban
+    network_mode: host
     cap_add:
       - NET_ADMIN
       - NET_RAW
-    network_mode: host
     environment:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
     volumes:
+      - /mnt/orchid_storage/fail2ban/config:/config
       - /var/log:/var/log:ro
       - /mnt/orchid_storage/nginx_proxy_manager/data/logs:/remotelogs/nginx:ro
     restart: unless-stopped
@@ -49,9 +51,14 @@ services:
   wireguard:
     container_name: wireguard
     image: ghcr.io/linuxserver/wireguard:latest
+    restart: always
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+    ports:
+      - 51820:51820/udp
     environment:
       PUID: 1000
       PGID: 1000
@@ -63,11 +70,6 @@ services:
     volumes:
       - /mnt/orchid_storage/wireguard/config:/config
       - /mnt/orchid_storage/wireguard/lib/modules:/lib/modules
-    ports:
-      - 51820:51820/udp
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
-    restart: always
     networks:
       network:
         ipv4_address: 172.22.0.3
@@ -76,13 +78,13 @@ services:
     container_name: mysql
     image: mysql/mysql-server:latest
     command: --default-authentication-plugin=mysql_native_password --bind-address=172.22.0.30
+    restart: always
     ports:
-      - '3306:3306'
+      - 3306:3306
     environment:
       MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_ROOT_HOST: '%'
-    restart: always
     volumes:
       - /mnt/orchid_storage/mysql/var/lib/mysql:/var/lib/mysql
     networks:
@@ -92,40 +94,40 @@ services:
   freshrss:
     image: ghcr.io/linuxserver/freshrss:latest
     container_name: freshrss
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - 8888:80
     environment:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
     volumes:
       - /mnt/orchid_storage/freshrss/config:/config
-    ports:
-      - '8888:80'
-    depends_on:
-      - mysql
-    restart: always
     networks:
       network:
         ipv4_address: 172.22.0.50
 
   nginx_proxy_manager:
     container_name: nginx_proxy_manager
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: jc21/nginx-proxy-manager:latest
     restart: always
+    depends_on:
+      - mysql
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - 80:80
+      - 81:81
+      - 443:443
     environment:
-      DB_MYSQL_HOST: '172.22.0.30'
+      DB_MYSQL_HOST: 172.22.0.30
       DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: '${MYSQL_NGINX_USERNAME}'
-      DB_MYSQL_PASSWORD: '${MYSQL_NGINX_PASSWORD}'
-      DB_MYSQL_NAME: 'nginx_proxy_manager'
+      DB_MYSQL_USER: ${MYSQL_NGINX_USERNAME}
+      DB_MYSQL_PASSWORD: ${MYSQL_NGINX_PASSWORD}
+      DB_MYSQL_NAME: nginx_proxy_manager
     volumes:
       - /mnt/orchid_storage/nginx_proxy_manager/data:/data
       - /mnt/orchid_storage/nginx_proxy_manager/letsencrypt:/etc/letsencrypt
-    depends_on:
-      - mysql
     networks:
       network:
         ipv4_address: 172.22.0.51
@@ -144,14 +146,14 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: America/Los_Angeles
-      BASE_URL: 'https://mealie.hou.sh'
-      ALLOW_SIGNUP: 'false'
-      SMTP_HOST: '${MEALIE_SMTP_HOST}'
+      BASE_URL: https://mealie.hou.sh
+      ALLOW_SIGNUP: false
+      SMTP_HOST: ${MEALIE_SMTP_HOST}
       SMTP_PORT: 465
-      SMTP_AUTH_STRATEGY: 'SSL'
-      SMTP_FROM_EMAIL: '${MEALIE_SMTP_FROM_EMAIL}'
-      SMTP_USER: '${MEALIE_SMTP_USER}'
-      SMTP_PASSWORD: '${MEALIE_SMTP_PASSWORD}'
+      SMTP_AUTH_STRATEGY: SSL
+      SMTP_FROM_EMAIL: ${MEALIE_SMTP_FROM_EMAIL}
+      SMTP_USER: ${MEALIE_SMTP_USER}
+      SMTP_PASSWORD: ${MEALIE_SMTP_PASSWORD}
       THEME_LIGHT_PRIMARY: '#78C2AD'
       THEME_LIGHT_ACCENT: '#007A99'
       THEME_LIGHT_SECONDARY: '#CF8083'

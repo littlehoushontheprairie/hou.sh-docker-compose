@@ -1,4 +1,5 @@
 version: '3.5'
+
 services:
   homebridge:
     container_name: homebridge
@@ -52,10 +53,10 @@ services:
     image: mysql/mysql-server:latest
     command: --default-authentication-plugin=mysql_native_password --bind-address=172.18.0.3
     ports:
-      - '3306:3306'
+      - 3306:3306
     environment:
       MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_ROOT_HOST: '%'
     restart: always
     volumes:
@@ -69,15 +70,15 @@ services:
     image: jc21/nginx-proxy-manager:latest
     restart: always
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - 80:80
+      - 81:81
+      - 443:443
     environment:
-      DB_MYSQL_HOST: '172.18.0.3'
+      DB_MYSQL_HOST: 172.18.0.3
       DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: '${MYSQL_NGINX_USERNAME}'
-      DB_MYSQL_PASSWORD: '${MYSQL_NGINX_PASSWORD}'
-      DB_MYSQL_NAME: 'nginx_proxy_manager'
+      DB_MYSQL_USER: ${MYSQL_NGINX_USERNAME}
+      DB_MYSQL_PASSWORD: ${MYSQL_NGINX_PASSWORD}
+      DB_MYSQL_NAME: nginx_proxy_manager
     volumes:
       - /mnt/lilac_storage/nginx_proxy_manager/data:/data
       - /mnt/lilac_storage/nginx_proxy_manager/letsencrypt:/etc/letsencrypt
@@ -88,22 +89,22 @@ services:
         ipv4_address: 172.18.0.4
 
   stash:
-    image: stashapp/stash:latest
     container_name: stash
+    image: stashapp/stash:latest
     restart: unless-stopped
     ports:
-      - '9999:9999'
+      - 9999:9999
     logging:
-      driver: 'json-file'
+      driver: json-file
       options:
         max-file: '10'
         max-size: '2m'
     environment:
-      - STASH_STASH=/data/
-      - STASH_GENERATED=/generated/
-      - STASH_METADATA=/metadata/
-      - STASH_CACHE=/cache/
-      - STASH_PORT=9999
+      STASH_STASH: /data/
+      STASH_GENERATED: /generated/
+      STASH_METADATA: /metadata/
+      STASH_CACHE: /cache/
+      STASH_PORT: 9999
     volumes:
       - /etc/localtime:/etc/localtime:ro
       ## Keep configs, scrapers, and plugins here.
@@ -122,7 +123,6 @@ services:
       network:
         ipv4_address: 172.18.0.5
   
-
 networks:
   network:
     ipam:

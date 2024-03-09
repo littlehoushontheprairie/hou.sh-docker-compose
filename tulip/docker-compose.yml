@@ -1,0 +1,62 @@
+version: '3.5'
+
+services:
+  nginx_certs_expiry_reminder:
+    container_name: nginx_certs_expiry_reminder
+    image: ghcr.io/littlehoushontheprairie/nginx_certs_expiry_reminder:latest
+    restart: always
+    network_mode: host
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    environment:
+      TZ: America/Los_Angeles
+      FROM_EMAIL: ${FROM_EMAIL}
+      TO_NAME: ${TO_NAME}
+      TO_EMAIL: ${TO_EMAIL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+  
+  check-obituaries-alert:
+    container_name: check-obituaries-alert
+    image: ghcr.io/littlehoushontheprairie/check-obituaries-alert:latest
+    restart: always
+    network_mode: host
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    environment:
+      TZ: America/Los_Angeles
+      FROM_EMAIL: ${FROM_EMAIL}
+      TO_NAME: ${TO_NAME}
+      TO_EMAIL: ${TO_EMAIL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    volumes:
+      - /home/laura/check_obituaries_alert/data:/data
+  
+  linode_firewall_autoupdater:
+    container_name: linode_firewall_autoupdater
+    image: ghcr.io/littlehoushontheprairie/linode-firewall-autoupdater:latest
+    restart: always
+    network_mode: host
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    environment:
+      TZ: America/Los_Angeles
+      LINODE_TOKEN: ${LINODE_TOKEN}
+      LINODE_FIREWALL_ID: ${LINODE_FIREWALL_ID}
+      LINODE_LABEL_NAME: ${LINODE_LABEL_NAME}
+      FROM_EMAIL: ${FROM_EMAIL}
+      TO_EMAIL: ${TO_EMAIL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      PROXY_URL: ${PROXY_URL}

@@ -1,0 +1,48 @@
+version: '3.5'
+
+services:
+  # minecraft:
+  #   container_name: minecraft
+  #   image: itzg/minecraft-bedrock-server:latest
+  #   ports:
+  #     - 19132:19132/udp
+  #   restart: always
+  #   environment:
+  #     TZ: America/Los_Angeles
+  #     EULA: 'TRUE'
+  #     ONLINE_MODE: 
+  #     GAMEMODE: survival
+  #     DIFFICULTY: normal
+  #     ALLOW_LIST_USERS: ${MINECRAFT_ALLOW_LIST_USERS}
+  #   volumes:
+  #     - /mnt/hibiscus_storage/minecraft/data:/data
+  #   cap_add:
+  #     - NET_BIND_SERVICE
+  #   networks:
+  #     network:
+  #       ipv4_address: 172.23.0.2
+
+  actualbudget:
+    container_name: actualbudget
+    image: actualbudget/actual-server:latest
+    ports:
+      - 5006:5006
+    restart: always
+    environment:
+      TZ: America/Los_Angeles
+    cap_add:
+      - NET_BIND_SERVICE
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - /Users/laura/docker/storage/actual-data:/data
+    networks:
+      network:
+        ipv4_address: 172.23.0.2
+
+networks:
+  network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.23.0.0/16
