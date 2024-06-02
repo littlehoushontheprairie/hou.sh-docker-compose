@@ -34,10 +34,10 @@ services:
       PGID: 1000
       TZ: America/Los_Angeles
       BASE_URL: https://mealie.hou.sh
-      ALLOW_SIGNUP: false
+      ALLOW_SIGNUP: 'false'
       SMTP_HOST: ${MEALIE_SMTP_HOST}
       SMTP_PORT: 465
-      SMTP_AUTH_STRATEGY: SSL
+      SMTP_AUTH_STRATEGY: 'SSL'
       SMTP_FROM_EMAIL: ${MEALIE_SMTP_FROM_EMAIL}
       SMTP_USER: ${MEALIE_SMTP_USER}
       SMTP_PASSWORD: ${MEALIE_SMTP_PASSWORD}
