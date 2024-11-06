@@ -56,7 +56,7 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
     volumes:
-      - /home/laura/check_obituaries_alert/data:/data
+      - /mnt/lilac_storage/check_obituaries_alert/data:/data
   
   linode_firewall_autoupdater:
     container_name: linode_firewall_autoupdater
