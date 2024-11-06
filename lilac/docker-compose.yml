@@ -20,7 +20,7 @@ services:
         
   nginx_certs_expiry_reminder:
     container_name: nginx_certs_expiry_reminder
-    image: ghcr.io/littlehoushontheprairie/nginx_certs_expiry_reminder:latest
+    image: ghcr.io/littlehoushontheprairie/nginx-certs-expiry-reminder:latest
     restart: always
     network_mode: host
     dns:
@@ -39,8 +39,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
   
-  check-obituaries-alert:
-    container_name: check-obituaries-alert
+  check_obituaries_alert:
+    container_name: check_obituaries_alert
     image: ghcr.io/littlehoushontheprairie/check-obituaries-alert:latest
     restart: always
     network_mode: host
