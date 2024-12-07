@@ -60,6 +60,21 @@ services:
     networks:
       network:
         ipv4_address: 172.23.0.3
+
+  speedtest:
+    container_name: openspeedtest
+    image: openspeedtest/latest
+    restart: always
+    ports: 
+      - 3000:3000
+      - 3001:3001
+    environment:
+      - ENABLE_LETSENCRYPT=True
+      - DOMAIN_NAME=${SPEEDTEST_DOMAIN_NAME}
+      - USER_EMAIL=${SPEEDTEST_EMAIL}
+    networks:
+      network:
+        ipv4_address: 172.23.0.4
   
 networks:
   network:
