@@ -1,63 +1,4 @@
-version: '3.5'
-
 services:
-  homebridge:
-    container_name: homebridge
-    image: homebridge/homebridge:latest
-    restart: always
-    network_mode: host
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: America/Los_Angeles
-    volumes:
-      - /mnt/lilac_storage/homebridge:/homebridge
-    logging:
-      driver: json-file
-      options:
-        max-size: '10mb'
-        max-file: '1'
-        
-  nginx_certs_expiry_reminder:
-    container_name: nginx_certs_expiry_reminder
-    image: ghcr.io/littlehoushontheprairie/nginx-certs-expiry-reminder:latest
-    restart: always
-    network_mode: host
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
-    environment:
-      TZ: America/Los_Angeles
-      FROM_EMAIL: ${FROM_EMAIL}
-      TO_NAME: ${TO_NAME}
-      TO_EMAIL: ${TO_EMAIL}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-  
-  check_obituaries_alert:
-    container_name: check_obituaries_alert
-    image: ghcr.io/littlehoushontheprairie/check-obituaries-alert:latest
-    restart: always
-    network_mode: host
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
-    environment:
-      TZ: America/Los_Angeles
-      FROM_EMAIL: ${FROM_EMAIL}
-      TO_NAME: ${TO_NAME}
-      TO_EMAIL: ${TO_EMAIL}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-    volumes:
-      - /mnt/lilac_storage/check_obituaries_alert/data:/data
-  
   linode_firewall_autoupdater:
     container_name: linode_firewall_autoupdater
     image: ghcr.io/littlehoushontheprairie/linode-firewall-autoupdater:latest
@@ -78,10 +19,35 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       PROXY_URL: ${PROXY_URL}
-      
+
+  porkbun_certs_autoupdater:
+    container_name: porkbun_certs_autoupdater
+    image: ghcr.io/littlehoushontheprairie/porkbun-certs-autoupdater:latest
+    restart: always
+    network_mode: host
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      TZ: America/Los_Angeles
+      PORKBUN_API_KEY: ${PORKBUN_API_KEY}
+      PORKBUN_SECRET_API_KEY: ${PORKBUN_SECRET_API_KEY}
+      PORKBUN_DOMAINS: ${PORKBUN_DOMAINS}
+      FROM_EMAIL: ${FROM_EMAIL}
+      TO_NAME: ${TO_NAME}
+      TO_EMAIL: ${TO_EMAIL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    volumes:
+      - /mnt/lilac_storage/certs:/certs
+
   adguardhome:
     container_name: adguard
     image: adguard/adguardhome:latest
+    dns:
+      - 1.0.0.1
+      - 1.1.1.1
     ports:
       - 53:53/tcp
       - 53:53/udp
@@ -183,10 +149,11 @@ services:
     networks:
       network:
         ipv4_address: 172.18.0.5
-  
+
 networks:
   network:
     ipam:
       driver: default
       config:
         - subnet: 172.18.0.0/16
+          
